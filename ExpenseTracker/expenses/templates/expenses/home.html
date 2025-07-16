@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Summary Cards -->
+        <div class="col-md-4 mb-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Expenses</h5>
+                    <h2 class="card-text">₹{{ total }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Expenses This Month</h5>
+                    <h2 class="card-text">₹{{ monthly_total|default:"0" }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Number of Expenses</h5>
+                    <h2 class="card-text">{{ expenses.count }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Expenses and Add Expense Button -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Recent Expenses</h2>
+                <a href="{% url 'expense:add_expense' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Expense
+                </a>
+            </div>
+
+            {% if expenses %}
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Amount</th>
+                                        <th>Category</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for expense in expenses %}
+                                    <tr>
+                                        <td>{{ expense.title }}</td>
+                                        <td>₹{{ expense.amount }}</td>
+                                        <td>{{ expense.category }}</td>
+                                        <td>{{ expense.date|date:"d M Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'expense:delete' expense.id %}" class="btn btn-danger btn-sm">Delete</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <p class="mb-0">No expenses found. Start by adding your first expense!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <h3>Category-wise expense chart</h3>
+    <div id="piechart" style="width:100%; max-width: 600px; height: 400px;"></div>
+    <script>
+        var data = [{
+            type: "pie",
+            values: {{ totals_json|safe }},
+            labels: {{ categories_json|safe }},
+            textinfo: "label+value+percent",
+            textposition: "outside",
+            automargin: true
+        }];
+
+        var layout = {
+            margin: {t:0, b:0, l:0, r:0},
+            showlegend: true
+        };
+
+        Plotly.newPlot('piechart', data, layout);
+    </script>
+
+</div>
+
+{% endblock %}

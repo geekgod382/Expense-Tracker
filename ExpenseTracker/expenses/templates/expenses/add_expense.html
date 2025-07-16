@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">Add New Expense</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                            {{ form.title.errors }}
+                            <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" 
+                                   class="form-control {% if form.title.errors %}is-invalid{% endif %}"
+                                   value="{{ form.title.value|default:'' }}" required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="{{ form.amount.id_for_label }}" class="form-label">Amount (₹)</label>
+                            {{ form.amount.errors }}
+                            <input type="number" name="{{ form.amount.name }}" id="{{ form.amount.id_for_label }}"
+                                   class="form-control {% if form.amount.errors %}is-invalid{% endif %}"
+                                   value="{{ form.amount.value|default:'' }}" required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                            {{ form.category.errors }}
+                            <input type="text" name="{{ form.category.name }}" id="{{ form.category.id_for_label }}"
+                                   class="form-control {% if form.category.errors %}is-invalid{% endif %}"
+                                   value="{{ form.category.value|default:'' }}" required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="{{ form.date.id_for_label }}" class="form-label">Date</label>
+                            {{ form.date.errors }}
+                            <input type="date" name="{{ form.date.name }}" id="{{ form.date.id_for_label }}"
+                                   class="form-control {% if form.date.errors %}is-invalid{% endif %}"
+                                   value="{{ form.date.value|date:'Y-m-d'|default:'' }}" required>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'expense:home' %}" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Expense</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
