@@ -41,32 +41,35 @@
             </div>
 
             {% if expenses %}
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Title</th>
-                                        <th>Amount</th>
-                                        <th>Category</th>
-                                        <th>Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for expense in expenses %}
-                                    <tr>
-                                        <td>{{ expense.title }}</td>
-                                        <td>₹{{ expense.amount }}</td>
-                                        <td>{{ expense.category }}</td>
-                                        <td>{{ expense.date|date:"d M Y" }}</td>
-                                        <td>
-                                            <a href="{% url 'expense:delete' expense.id %}" class="btn btn-danger btn-sm">Delete</a>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                <div id = "expenseTable">
+                    <button id="downloadBtn" onclick="downloadPDF()" class="btn btn-outline-dark mb-3">Download as PDF</button>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Amount</th>
+                                            <th>Category</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for expense in expenses %}
+                                        <tr>
+                                            <td>{{ expense.title }}</td>
+                                            <td>₹{{ expense.amount }}</td>
+                                            <td>{{ expense.category }}</td>
+                                            <td>{{ expense.date|date:"d M Y" }}</td>
+                                            <td>
+                                                <a class="btn btn-danger btn-sm delete-btn" href="{% url 'expense:delete' expense.id %}">Delete</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -97,6 +100,31 @@
         };
 
         Plotly.newPlot('piechart', data, layout);
+    </script>
+    <script>
+        function downloadPDF() {
+            const button = document.getElementById('downloadBtn');
+            button.style.display = 'none';
+
+            // Hide all delete buttons
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(btn => btn.style.display = 'none');
+
+            const element = document.getElementById('expenseTable');
+            const opt = {
+                margin:       0.5,
+                filename:     'expense.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Show the button and delete buttons again after PDF is generated
+                button.style.display = 'block';
+                deleteButtons.forEach(btn => btn.style.display = 'inline-block');
+            });
+        }
     </script>
 
 </div>
