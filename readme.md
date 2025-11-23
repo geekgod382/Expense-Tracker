@@ -13,6 +13,7 @@ A Django-based web application that helps you track and manage your personal exp
 
 - Django (Python web framework)
 - SQLite database
+- JavaScript
 - HTML/CSS
 - Bootstrap for responsive design
 
